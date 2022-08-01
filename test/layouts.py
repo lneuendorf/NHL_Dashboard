@@ -1,6 +1,8 @@
 # Dash components, html, and dash tables
-import dash_core_components as dcc
-import dash_html_components as html
+# import dash_core_components as dcc
+from dash import dcc
+# import dash_html_components as html
+from dash import html
 # import dash_table
 from dash import dash_table
 
@@ -9,6 +11,9 @@ import dash_bootstrap_components as dbc
 
 # Import custom data.py
 import data
+
+## import backend functions
+import backend_functions
 
 # Import data from data.py file
 teams_df = data.teams
@@ -124,45 +129,44 @@ teamLayout_old = html.Div([
 
 # Layout for Team Information page
 teamLayout = html.Div([
-    dbc.Row(dbc.Col(html.H1(children='Team Information'))),
+    dbc.Row(dbc.Col(
+        html.H1(
+            children=html.B(children='Team Information')
+        )
+    )),
+    dbc.Row(dbc.Col(
+        html.Hr(),
+    )),
     # Display Basic Information
-    dbc.Row(dbc.Col(
-        html.Hr(),
-    )),
-    dbc.Row(dbc.Col(
-        html.H2(children='Basic Information')
-    ), justify="center"),
+    dbc.Row(dbc.Col(html.H2(children=html.B(children='Basic Information')))),
     dbc.Row(
-        [
-            dbc.Col(html.H4(
-                id="team_abbrev",
-                children="Team Abbrev.: " + team_basic_info["team_abbrev"]
-            )),
-            dbc.Col(html.H4(
-                id="team_name",
-                children="Team name: " + team_basic_info["team_name"]
-            )),
-        ],
-        justify="center",
+        [dbc.Col(html.H4(
+            id="team_abbrev",
+            # children="Team Abbrev.: " + team_basic_info["team_abbrev"],
+            children="Team Abbrev.: ",
+        )),
+        dbc.Col(html.H4(
+            id="team_name",
+            # children="Team name: " + team_basic_info["team_name"],
+            children="Team name: ",
+        ))],
+        # justify="center",
     ),
     dbc.Row(
-        [
-            dbc.Col(html.H4(
-                id="team_city",
-                children="Team city: " + team_basic_info["team_city"]
-            )),
-            dbc.Col(html.H4(
-                id="team_arena",
-                children="Team arena: " + team_basic_info["team_arena"]
-            )),
-        ],
-        justify="center",
+        [dbc.Col(html.H4(
+            id="team_city",
+            # children="Team city: " + team_basic_info["team_city"],
+            children="Team city: ",
+        )),
+        dbc.Col(html.H4(
+            id="team_arena",
+            # children="Team arena: " + team_basic_info["team_arena"],
+            children="Team arena: ",
+        ))],
+        # justify="center",
     ),
-    dbc.Row(dbc.Col(
-        html.Hr(),
-    )),
-    
-    dbc.Row(dbc.Col(html.H2(children='Statistical Information'))),
+    dbc.Row(dbc.Col(html.Hr())),
+    dbc.Row(dbc.Col(html.H2(children=html.B(children='Statistical Information')))),
     # Bar Charts of weight and height histograms
     dbc.Row(dbc.Col(html.H4(children='Weight distribution of team players'))),
     dbc.Row(dbc.Col(
@@ -170,8 +174,8 @@ teamLayout = html.Div([
             id='weight-hist',
             config={'displayModeBar': False}
         ),
-        xs={'size':12, 'offset':0}, sm={'size':12, 'offset':0},
-        md={'size': 12, 'offset': 0},lg={'size': 12, 'offset': 0},
+        xs={'size': 12, 'offset': 0}, sm={'size': 12, 'offset': 0},
+        md={'size': 12, 'offset': 0}, lg={'size': 12, 'offset': 0},
     )),
     dbc.Row(dbc.Col(html.H4(children='Height distribution of team players'))),
     dbc.Row(dbc.Col(
@@ -179,8 +183,8 @@ teamLayout = html.Div([
             id='height-hist',
             config={'displayModeBar': False}
         ),
-        xs={'size':12, 'offset':0}, sm={'size':12, 'offset':0},
-        md={'size': 12, 'offset': 0},lg={'size': 12, 'offset': 0},
+        xs={'size': 12, 'offset': 0}, sm={'size': 12, 'offset': 0},
+        md={'size': 12, 'offset': 0}, lg={'size': 12, 'offset': 0},
     )),
     # Line Charts of game score, penality minute, and ice time
     dbc.Row(dbc.Col(html.H4(children='Game score over years'))),
@@ -189,17 +193,17 @@ teamLayout = html.Div([
             id='game_score-line',
             config={'displayModeBar': False}
         ),
-        xs={'size':12, 'offset':0}, sm={'size':12, 'offset':0},
-        md={'size': 12, 'offset': 0},lg={'size': 12, 'offset': 0},
+        xs={'size': 12, 'offset': 0}, sm={'size': 12, 'offset': 0},
+        md={'size': 12, 'offset': 0}, lg={'size': 12, 'offset': 0},
     )),
-    dbc.Row(dbc.Col(html.H4(children='Penality minutes over years'))),
+    dbc.Row(dbc.Col(html.H4(children='Penalty minutes over years'))),
     dbc.Row(dbc.Col(
         dcc.Graph(
-            id='penality_minutes-line',
+            id='penalty_minutes-line',
             config={'displayModeBar': False}
         ),
-        xs={'size':12, 'offset':0}, sm={'size':12, 'offset':0},
-        md={'size': 12, 'offset': 0},lg={'size': 12, 'offset': 0},
+        xs={'size': 12, 'offset': 0}, sm={'size': 12, 'offset': 0},
+        md={'size': 12, 'offset': 0}, lg={'size': 12, 'offset': 0},
     )),
     dbc.Row(dbc.Col(html.H4(children='Ice time over years'))),
     dbc.Row(dbc.Col(

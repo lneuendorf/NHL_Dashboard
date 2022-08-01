@@ -2,16 +2,23 @@
 from dash.dependencies import Input, Output
 # Plotly graph objects to render graph plots
 import plotly.graph_objects as go
+import plotly.express as px
 from plotly.subplots import make_subplots
 # Import dash html, bootstrap components, and tables for datatables
 import dash_html_components as html
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_table
+import pandas as pd
 
 # Import app from the same folder
 from app_setup import app
 
+## import back-end functions
+import backend_functions
+from backend_functions import get_basic_team_info, get_team_weight_buckets
+from backend_functions import get_team_height_buckets, get_game_score_performance
+from backend_functions import get_penalty_minutes, get_ice_time
 # Import custom data.py
 import data
 
@@ -30,6 +37,23 @@ field_df = data.fielding
 pitching_df = data.pitching
 
 batter_df.astype({"rbi":'int64', "sb":'int64', "cs":'int64', "so":'int64', "ibb":'int64', "hbp":'int64', "sh":'int64', "sf":'int64', "g_idp":'int64'})
+
+# This will update the team Basic Information division
+@app.callback(
+    [Output("team_abbrev", "children"),
+     Output("team_name", "children"),
+     Output("team_city", "children"),
+     Output("team_arena", "children")],
+    [Input("team-dropdown", "value")])
+def updateTeamBasicInfo(team_name):
+    team_basic_info = get_basic_team_info(team_name)
+    abbrev_child = "Team Abbrev.: " + team_basic_info["team_abbrev"]
+    name_child = "Team name: " + team_basic_info["team_name"]
+    city_child = "Team city: " + team_basic_info["team_city"]
+    arena_child = "Team arena: " + team_basic_info["team_arena"]
+    
+    return abbrev_child, name_child, city_child, arena_child
+
 
 # This will update the team dropdown and the range of the slider
 @app.callback(
@@ -127,6 +151,92 @@ def update_win_table(selected_team, year_range):
         )))
         return data_note
 
+
+# Callback to update weight hist. bar chart, takes data request from team_menu
+@app.callback(
+    Output('weight-hist', 'figure'),
+    Input('team-dropdown', 'value'))
+def updateWeightHist(team_name):
+    weight_dict = get_team_weight_buckets(team_name)
+    # Create Bar Chart figure
+    fig = px.bar(pd.DataFrame(weight_dict, index=["key"]).T, opacity=0.8)
+        # go.Bar(name='Weights', x=pd.DataFrame(weight_dict, index=["key"]).T,
+        #        y="key", marker_color='#004687',opacity=0.8),
+    
+    # set x axes title and tick to only include year given no half year such as 1927.5
+    fig.update_xaxes(title='Weight (lb)',tickformat='d')
+    # set y axes to fixed selection range, user can only select data in the x axes
+    fig.update_yaxes(title='Number of players', fixedrange=False)
+    
+    # Update figure, set hover to the X-Axis and establish title
+    # fig.update_layout(
+    #     barmode='group', title="Weight histogram of team players",
+    #     font={'color':'darkslategray'},paper_bgcolor='white',plot_bgcolor='#f8f5f0',
+    #     legend=dict(orientation="h", yanchor="bottom", y=1, xanchor="right", x=1))
+    
+    # return figure
+    return fig
+
+# Callback to update height hist. bar chart, takes data request from team_menu
+@app.callback(
+    Output('height-hist', 'figure'),
+    Input('team-dropdown', 'value'))
+def updateHeightHist(team_name):
+    height_dict = get_team_height_buckets(team_name)
+    
+    # Create Bar Chart figure
+    fig = px.bar(pd.DataFrame(height_dict, index=["key"]).T, opacity=0.8)
+    fig.update_xaxes(title='Height (in)',tickformat='d')
+    fig.update_yaxes(title='Number of players', fixedrange=False)
+       
+    # return figure
+    return fig
+
+# Callback to update game score line chart, takes data request from team_menu
+@app.callback(
+    Output('game_score-line', 'figure'),
+    Input('team-dropdown', 'value'))
+def updateGameScoreLine(team_name):
+    score_dict = get_game_score_performance(team_name)
+    
+    # Create line chart figure
+    fig = px.line(pd.DataFrame(score_dict, index=["key"]).T)
+    fig.update_xaxes(title='Year',tickformat='d')
+    fig.update_yaxes(title='Score', fixedrange=False)
+       
+    # return figure
+    return fig
+
+# Callback to update penalty minute line chart, takes data request from team_menu
+@app.callback(
+    Output('penalty_minutes-line', 'figure'),
+    Input('team-dropdown', 'value'))
+def updatePenaltyMinutesLine(team_name):
+    penalty_dict = get_penalty_minutes(team_name)
+    print(penalty_dict)
+    
+    # Create line chart figure
+    fig = px.line(pd.DataFrame(penalty_dict, index=["key"]).T)
+    fig.update_xaxes(title='Year',tickformat='d')
+    fig.update_yaxes(title='Penalty minutes (min)', fixedrange=False)
+    
+    # return figure
+    return fig
+
+# Callback to update ice time line chart, takes data request from team_menu
+@app.callback(
+    Output('ice_time-line', 'figure'),
+    Input('team-dropdown', 'value'))
+def updateIceTimeLine(team_name):
+    ice_time_dict = get_ice_time(team_name)
+    
+    # Create line chart figure
+    fig = px.line(pd.DataFrame(ice_time_dict, index=["key"]).T)
+    fig.update_xaxes(title='Year',tickformat='d')
+    fig.update_yaxes(title='Ice time (sec)', fixedrange=False)
+       
+    # return figure
+    return fig
 
 # Callback to a W-L Bar Chart, takes data request from dropdown
 @app.callback(
