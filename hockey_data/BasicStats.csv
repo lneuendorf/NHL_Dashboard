@@ -1,4 +1,4 @@
-player_id,season,games_played,penality_minutes,ice_time,game_score,shifts
+player_id,season,games_played,penalty_minutes,ice_time,game_score,shifts
 8465009,2021,72,65,80921,4.02,1676
 8466138,2021,34,10,22735,9.79,521
 8469455,2021,71,26,45778,26.46,1135
