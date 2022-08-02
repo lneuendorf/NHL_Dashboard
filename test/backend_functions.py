@@ -143,67 +143,74 @@ meta.create_all()
 '''
 This function is for inserting a player tuple into DBMS.
 
-return: 0 of failed insert and 1 on successful insert
+return: error string of failed insert and 1 on successful insert
 '''
 def insert_player(pid=None, s=None, pname=None, pos=None, w=None, h=None, tm_abrv=None):
     # check 1: pid and s MUST NOT be empty
-    if (pid is None) or (s is None):
-        print("Invalid insert: player_id and season MUST NOT be empty.")
-        return 0
+    if (pid is None) or (s is None) or (pname is None) or (pos is None) or (w is None) or (h is None) or (tm_abrv is None):
+        return "Invalid insert: ALL blanks MUST NOT be empty."
+        # return 0
     
-    # check 2: player_id/season combo cannot already exist in database
+    # check 2: player_id/season combo already exists in database
     if session.query(Player).filter((Player.c.player_id == pid) & (Player.c.season == s)).first() is not None:
-        print("Invalid insert: player_id/season combo already exists in database")
-        return 0
+        return "Invalid insert: player_id/season combo already exists in database"
+        # return 0
 
-    #if check 1 & 2 passed -> insert player data into dbms
-    insert_statement_1 = insert(Player).values(player_id=pid,season=s,player_name=pname,position=pos,weight=w,height=h,team_abbrev=tm_abrv)
+    # if check 1 & 2 passed -> insert player data into dbms
+    insert_statement_1 = insert(Player).values(player_id=pid,
+                                               season=s,
+                                               player_name=pname,
+                                               position=pos,
+                                               weight=w,
+                                               height=h,
+                                               team_abbrev=tm_abrv)
     insert_statement_2 = insert(BasicStats).values(player_id = pid,
                                                    season = s,
-                                                   games_played = None,
-                                                   penalty_minutes = None,
-                                                   ice_time = None,
-                                                   game_score = None,
-                                                   shifts = None)
+                                                   games_played = 0,
+                                                   penalty_minutes = 0,
+                                                   ice_time = 0,
+                                                   game_score = 0,
+                                                   shifts = 0)
     insert_statement_3 = insert(AdvancedStats).values(player_id = pid,
                                                       season = s,
-                                                      I_F_xGoals = None,
-                                                      I_F_flurryScoreVenueAdjustedxGoals = None,
-                                                      I_F_primaryAssists = None,
-                                                      I_F_secondaryAssists = None,
-                                                      I_F_shotsOnGoal = None,
-                                                      I_F_missedShots = None,
-                                                      I_F_blockedShotAttempts = None,
-                                                      I_F_shotAttempts = None,
-                                                      I_F_points = None,
-                                                      I_F_goals = None,
-                                                      I_F_rebounds = None,
-                                                      I_F_savedShotsOnGoal = None,
-                                                      I_F_faceOffsWon = None,
-                                                      I_F_hits = None,
-                                                      I_F_takeaways = None)
+                                                      I_F_xGoals = 0,
+                                                      I_F_flurryScoreVenueAdjustedxGoals = 0,
+                                                      I_F_primaryAssists = 0,
+                                                      I_F_secondaryAssists = 0,
+                                                      I_F_shotsOnGoal = 0,
+                                                      I_F_missedShots = 0,
+                                                      I_F_blockedShotAttempts = 0,
+                                                      I_F_shotAttempts = 0,
+                                                      I_F_points = 0,
+                                                      I_F_goals = 0,
+                                                      I_F_rebounds = 0,
+                                                      I_F_savedShotsOnGoal = 0,
+                                                      I_F_faceOffsWon = 0,
+                                                      I_F_hits = 0,
+                                                      I_F_takeaways = 0)
     
     conn.execute(insert_statement_1)
     conn.execute(insert_statement_2)
     conn.execute(insert_statement_3)
+    
     return 1
     
     
 '''
 This function deletes a player from DBMS given a player_id & season
 
-return: 0 if deletion failed and 1 on success
+return: error string if deletion failed and 1 on success
 '''
 def delete_player(pid=None, s=None):
     # check 1: pid and s MUST NOT be empty
     if (pid is None) or (s is None):
-        print("Invalid delete: player_id and season MUST NOT be empty.")
-        return 0
+        return "Invalid delete: player_id and season MUST NOT be empty."
+        # return 0
     
     # check 2: player_id/season combo must exist in database
     if session.query(Player).filter((Player.c.player_id == pid) & (Player.c.season == s)).first() is None:
-        print("Invalid delete: player_id/season combo doesn't exists in database")
-        return 0
+        return "Invalid delete: player_id/season combo doesn't exists in database"
+        # return 0
     
     # if check 1 & 2 pass -> delete player from dbms
     delete_statement_1 = delete(Player).where((Player.c.player_id==pid) & (Player.c.season==s))
@@ -223,23 +230,23 @@ This function updates one or multiple of the following player attributes:
         - height
         - team_abbrev
 
-return: 0 if update failed and 1 on success
+return: error string if update failed and 1 on success
 '''
 def update_player(pid=None, s=None, pname=None, pos=None, w=None, h=None, tm_abrv=None):
     # check 1: pid and s MUST NOT be empty
     if (pid is None) or (s is None):
-        print("Invalid update: player_id and season MUST NOT be empty.")
-        return 0
+        return "Invalid update: player_id and season MUST NOT be empty."
+        # return 0
     
     # check 2: player_id/season combo must exist in database
     if session.query(Player).filter((Player.c.player_id == pid) & (Player.c.season == s)).first() is None:
-        print("Invalid update: player_id/season combo doesn't exists in database")
-        return 0
+        return "Invalid update: player_id/season combo doesn't exists in database"
+        # return 0
     
     # check 3: must have passed a value in one of the updatable features
     if (pname is None) and (pos is None) and (w is None) and (h is None) and (tm_abrv is None):
-        print("Invalid update: must have passed a value in one of the updatable features.")
-        return 0
+        return "Invalid update: must have passed a value in one of the updatable features."
+        # return 0
     
     # if check 1 & 2 & 3 pass -> update player data
     if (pname is not None):
@@ -257,6 +264,7 @@ def update_player(pid=None, s=None, pname=None, pos=None, w=None, h=None, tm_abr
     if (tm_abrv is not None):
         update_statement = update(Player).where((Player.c.player_id==pid) & (Player.c.season==s)).values(team_abbrev=tm_abrv)
         conn.execute(update_statement)
+    
     return 1
     
 
@@ -266,23 +274,41 @@ This function searches for player data for the 'Display' button. Dictionary is o
 
 return: dictionary of player data or 0 if failed
 '''
-def get_player_data(pid=None, s=None):
-    # check 1: pid and s MUST NOT be empty
-    if (pid is None) or (s is None):
-        print("Invalid get: player_id and season MUST NOT be empty.")
-        return 0
+def get_player_data(pid=None, pname=None, s=None):
+    if (pname is None or (pid is not None and pname is not None)):
+        # check 1: pid and s MUST NOT be empty
+        if (pid is None) or (s is None):
+            return "Invalid get: player_id and season MUST NOT be empty."
+            # return 0
+        
+        # check 2: player_id/season combo must exist in database
+        if session.query(Player).filter((Player.c.player_id == pid) & (Player.c.season == s)).first() is None:
+            return "Invalid get: player_id/season combo doesn't exists in database"
+            # return 0
+        
+        # check 1 & 2 passed -> get player data
+        get_statment = Player.select().where((Player.c.player_id==pid) & (Player.c.season==s))
     
-    # check 2: player_id/season combo must exist in database
-    if session.query(Player).filter((Player.c.player_id == pid) & (Player.c.season == s)).first() is None:
-        print("Invalid get: player_id/season combo doesn't exists in database")
-        return 0
+    else:
+        # check 1: pid and s MUST NOT be empty
+        if (s is None):
+            return "Invalid get: season MUST NOT be empty."
+            # return 0
+        
+        # check 2: player_id/season combo must exist in database
+        if session.query(Player).filter((Player.c.player_name == pname) & (Player.c.season == s)).first() is None:
+            return "Invalid get: player_id/season combo doesn't exists in database"
+            # return 0
+        
+        # check 1 & 2 passed -> get player data
+        get_statment = Player.select().where((Player.c.player_name==pname) & (Player.c.season==s))
     
-    # check 1 & 2 passed -> get player data
-    get_statment = Player.select().where((Player.c.player_id==pid) & (Player.c.season==s))
     result = conn.execute(get_statment)
     player_dict = {}
     for row in result:
         player_dict = {
+            "player_id" : row[0],
+            "season" : row[1],
             "player_name" : row[2],
             "position" : row[3],
             "weight" : row[4],
@@ -988,14 +1014,11 @@ def get_advanced_stats(s=None, tm_name=None):
     for row in result:
         row_list.append(row)
         
-        														
-        
     df = pd.DataFrame(row_list, columns=['Player', 'Team', 'Expected Goals'	,'Flurry Score Venue Adjusted Expected Goals','Primary Assists',	
                                          'Secondary Assists','Shots On Goal','Missed Shots','Blocked Shot Attempts','Shot Attempts','Points',
                                          'Goals','Rebounds','Saved Shots On Goal','Face Offs Won','Hits','Takeaways'])
     return df
 
-    
 
 ##################################################
 #####    END OF FUNCTIONS FOR INTERFACE 3    #####

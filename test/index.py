@@ -9,8 +9,7 @@ from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 
 # Navbar, layouts, custom callbacks
-from layouts import appMenu, menuSlider, playerMenu, teamLayout, battingLayout
-from layouts import fieldingLayout, projMenu, projLayout, team_menu, teamLayout_old
+from layouts import team_layout, team_menu, update_layout, player_info_layout
 import callbacks
 
 # Import from other files under same folder
@@ -48,7 +47,7 @@ topbar = html.Div(
                 dbc.NavLink("Home", href="/", active="exact"),
                 dbc.NavLink("Team Information", href="/team", active="exact"),
                 dbc.NavLink("Player Information", href="/player", active="exact"),
-                dbc.NavLink("Update Player Data", href="/update", active="exact"),
+                dbc.NavLink("Update/Show Player Data", href="/update", active="exact"),
             ],
             # horizontal="End",
             pills=True,
@@ -92,12 +91,14 @@ def render_page_content(pathname):
             3.0 Unported License. For details see: [CreativeCommons](http://creativecommons.org/licenses/by-sa/3.0/)
         ''')], className='home')
     elif pathname == '/team':
-        return team_menu, teamLayout
+        return team_menu, team_layout
         # return appMenu, menuSlider, teamLayout
     elif pathname == '/player':
-        return appMenu, menuSlider, playerMenu, battingLayout
+        return team_menu, player_info_layout
+        # return appMenu, menuSlider, playerMenu, battingLayout
     elif pathname == '/update':
-        return appMenu, menuSlider, fieldingLayout
+        return update_layout
+        # return appMenu, menuSlider, fieldingLayout
     # elif pathname == '/projection':
     #     return projMenu, projLayout
     else:
@@ -114,4 +115,4 @@ def render_page_content(pathname):
 # Call app server
 if __name__ == '__main__':
     # set debug to false when deploying app
-    app.run_server(debug=True)
+    app.run_server(debug=True, dev_tools_silence_routes_logging = False)
