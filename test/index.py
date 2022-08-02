@@ -80,15 +80,15 @@ def render_page_content(pathname):
     if pathname == '/':
         return html.Div([dcc.Markdown('''
             ### Applicaiton Introduction
-            This application is a portfolio project built by [Matt Parra](https://devparra.github.io/) using Plotly's Dash,
-            faculty.ai's Dash Bootstrap Components, Pandas, SKlearn's Linear Regression algorithm, and custom functions. 
-            Using historical MLB (Major League Baseball) data, this application provides visualizations for team and player 
-            statistics dating from 1903 to 2020. This application also provides player projections and regression analysis.
+            This application was built by Bo-Hsun Chen, Adilnur Istekov, and Luke Neuendorf for the UW-Madison course 
+            “Database Management Systems: Design and Implementation.” The purpose of the app is to provide a way to 
+            visualize 2009-2021 NHL team and player data through plots and tables. Additionally, users are allowed to 
+            modify player data.
 
-            The data used in this application was retrieved from [Seanlahman.com](http://www.seanlahman.com/baseball-archive/statistics/).
-            Provided by [Chadwick Baseball Bureau's GitHub](https://github.com/chadwickbureau/baseballdatabank/) .
-            This database is copyright 1996-2021 by Sean Lahman. This data is licensed under a Creative Commons Attribution-ShareAlike
-            3.0 Unported License. For details see: [CreativeCommons](http://creativecommons.org/licenses/by-sa/3.0/)
+            The data used in this project was provided by [moneypuck.com](https://moneypuck.com/). Inspiration for the 
+            website was drawn from [Matt Parra](https://devparra.github.io/), who implemented an [MLB data 
+            visualization website]( https://historicalbaseball.herokuapp.com/field). We used his website as a template 
+            for our Dash user interface.
         ''')], className='home')
     elif pathname == '/team':
         return team_menu, team_layout
